@@ -9,6 +9,9 @@ class PostsController extends AppController {
      */
     public function index() {
         $this->set('posts', $this->Post->find('all'));
+        if($this->Auth->user('id')) {
+            $this->set('loggedIn', true);
+        }
     }
 
     /**
@@ -17,6 +20,7 @@ class PostsController extends AppController {
      */
     public function view($id = null) {
         $this->set('post', $this->Post->getPost($id));
+        $this->set('canEdit', $this->canEdit($this->Auth->user()));
     }
 
     /**
@@ -25,6 +29,8 @@ class PostsController extends AppController {
      */
     public function add() {
         if($this->request->is('post')) {
+            $this->request->data['Post']['user_id'] = $this->Auth->user('id');
+
             $this->Post->create();
             if($this->Post->save($this->request->data)) {
                 $this->Flash->success(__("Your post has been saved!"));
@@ -70,5 +76,40 @@ class PostsController extends AppController {
             $this->Flash->error(__('Your post could not be deleted.'));
         }
         return $this->redirect(array('action' => 'index'));
+    }
+
+    public function isAuthorized($user) {
+        // Any user may create posts.
+        switch($this->action) {
+            case "add":
+                return true;
+            case "edit":
+            case "delete":
+                return $this->canEdit($user);
+            default:
+                return parent::isAuthorized($user);
+        }
+    }
+
+    /**
+     * Checks if a user has the authorization to edit or delete the current post.
+     * @param $user array The user to check.
+     * @return bool True if the user has permission, false otherwise.
+     */
+    public function canEdit($user) {
+        if(isset($user['role'])) {
+            $postId = $this->request->params['pass'][0];
+            $isOwner = $this->Post->isOwnedBy($postId, $user['id']);
+            switch($user['role']) {
+                case 'author':
+                    return $isOwner;
+                case 'moderator':
+                case 'admin':
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        return false;
     }
 }

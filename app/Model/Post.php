@@ -22,4 +22,14 @@ class Post extends AppModel {
         if(!$post) throw new NotFoundException(__('Invalid post'));
         return $post;
     }
+
+    /**
+     * Checks whether a user created a given post.
+     * @param $id integer The ID of the user.
+     * @param $userId integer The ID of the post.
+     * @return bool True if the user created the post, false otherwise.
+     */
+    public function isOwnedBy($id, $userId) {
+        return $this->field('id', array('id' => $id, 'user_id' => $userId)) !== false;
+    }
 }
