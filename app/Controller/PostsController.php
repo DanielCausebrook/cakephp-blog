@@ -9,9 +9,6 @@ class PostsController extends AppController {
      */
     public function index() {
         $this->set('posts', $this->Post->find('all'));
-        if($this->Auth->user('id')) {
-            $this->set('loggedIn', true);
-        }
     }
 
     /**
@@ -19,8 +16,11 @@ class PostsController extends AppController {
      * @param null $id id of the post to retrieve.
      */
     public function view($id = null) {
-        $this->set('post', $this->Post->getPost($id));
-        $this->set('canEdit', $this->canEdit($this->Auth->user()));
+        $post = $this->Post->getById($id);
+        $this->set('post', $post['Post']);
+        $this->set('author', $post['PostUser']);
+        $this->set('canEdit', $this->isActionAuthorized($this->Auth->user(), 'edit'));
+        $this->set('canDelete', $this->isActionAuthorized($this->Auth->user(), 'delete'));
     }
 
     /**
@@ -46,7 +46,7 @@ class PostsController extends AppController {
      * @return CakeResponse|null
      */
     public function edit($id = null) {
-        $post = $this->Post->getPost($id);
+        $post = $this->Post->getById($id);
 
         if($this->request->is(array('post' => 'put'))) {
             $this->Post->id = $id;
@@ -79,36 +79,31 @@ class PostsController extends AppController {
     }
 
     public function isAuthorized($user) {
-        // Any user may create posts.
-        switch($this->action) {
+        return $this->isActionAuthorized($user, $this->action);
+    }
+
+    public function isActionAuthorized($user, $action) {
+        switch($action) {
             case "add":
-                return true;
+                return $user['UserRole']['add_post'];
             case "edit":
+                return $user['UserRole']['edit_post'] || $this->isPostOwner($user);
             case "delete":
-                return $this->canEdit($user);
+                return $user['UserRole']['delete_post'] || $this->isPostOwner($user);
             default:
-                return parent::isAuthorized($user);
+                throw new InvalidArgumentException();
         }
     }
 
     /**
-     * Checks if a user has the authorization to edit or delete the current post.
-     * @param $user array The user to check.
-     * @return bool True if the user has permission, false otherwise.
+     * Checks if a user owns the requested post.
+     * @param $user
+     * @return boolean
      */
-    public function canEdit($user) {
-        if(isset($user['role'])) {
+    public function isPostOwner($user) {
+        if(isset($this->request->params['pass'][0])) {
             $postId = $this->request->params['pass'][0];
-            $isOwner = $this->Post->isOwnedBy($postId, $user['id']);
-            switch($user['role']) {
-                case 'author':
-                    return $isOwner;
-                case 'moderator':
-                case 'admin':
-                    return true;
-                default:
-                    return false;
-            }
+            return $this->Post->isOwnedBy($postId, $user['id']);
         }
         return false;
     }

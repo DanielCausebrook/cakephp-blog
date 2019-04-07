@@ -55,8 +55,8 @@ class UsersController extends AppController {
      */
     public function add() {
         if ($this->request->is('post')) {
-            // Force new users to be authors only.
-            $this->request->data['User']['role'] = 'author';
+            // Prevent new users from setting elevated permissions.
+            $this->request->data['User']['role_id'] = null;
 
             $this->User->create();
             if ($this->User->save($this->request->data)) {

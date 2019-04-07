@@ -30,4 +30,19 @@ App::uses('Model', 'Model');
  * @package       app.Model
  */
 class AppModel extends Model {
+    public $recursive = -1;
+
+    /**
+     * Checks for and retrieves a post from the database. Makes use of exceptions
+     * @param null $id id of the post to retrieve.
+     * @throws NotFoundException if the post is not found in the database.
+     * @return array
+     */
+    public function getById($id = null) {
+        if (!$id) throw new NotFoundException(__('Invalid %s.', $this->alias));
+
+        $post = $this->findById($id);
+        if (!$post) throw new NotFoundException(__('Invalid %s.', $this->alias));
+        return $post;
+    }
 }

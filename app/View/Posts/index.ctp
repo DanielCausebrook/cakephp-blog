@@ -1,16 +1,12 @@
+<?php
+$this->extend('/Common/view');
+/** @var $posts array */
+?>
 <h1>Blog Posts</h1>
 <?php
-if(isset($loggedIn)) {?>
-    <p>Signed in.
-    <?= $this->Html->link('Logout',
-        array('controller' => 'users', 'action' => 'logout')) ?>
+if(AuthComponent::user('id')) {?>
     <?= $this->Html->link('New Post',
         array('controller' => 'posts', 'action' => 'add')) ?>
-    </p>
-<?php } else { ?>
-    <?= $this->Html->link('Login',
-        array('controller' => 'users', 'action' => 'login')) ?>
-
 <?php } ?>
 <table>
     <tr>

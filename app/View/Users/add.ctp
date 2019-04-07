@@ -1,3 +1,6 @@
+<?php
+$this->extend('/Common/View');
+?>
 <h1>Create a new user account</h1>
 <?= $this->Form->create('User') ?>
 <?= $this->Form->input('username') ?>

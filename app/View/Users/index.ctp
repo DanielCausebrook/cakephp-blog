@@ -1,3 +1,7 @@
+<?php
+$this->extend('/Common/View');
+/** @var $users array */
+?>
 <h1>User list</h1>
 
 <table>

@@ -1,17 +1,26 @@
-<h1><?= $post['Post']['title'] ?></h1>
-<?php if($post['Post']['created']) { ?>
-    <p><small>Created on <?= $post['Post']['created'] ?></small></p>
+<?php
+$this->extend('/Common/view');
+/** @var array $post */
+/** @var array $author */
+/** @var boolean $canEdit */
+/** @var boolean $canDelete */
+?>
+<h1><?= $post['title'] ?></h1>
+<?php if($post['created']) { ?>
+    <p><small>Created on <?= $post['created'] ?> by <?= $author['username'] ?>.</small></p>
 <?php } ?>
 <p>
-    <?= $post['Post']['body'] ?>
+    <?= $post['body'] ?>
 </p>
 
-<?php if($canEdit) { ?>
+<?php if($canEdit || $canDelete) { ?>
     <div>
-        <?= $this->Html->link(__('Edit'),
-            array('controller' => 'posts', 'action' => 'edit', $post['Post']['id'])) ?>
-        <?= $this->Form->postLink('Delete',
-            array('controller' => 'posts', 'action' => 'delete', $post['Post']['id']),
-            array('confirm' => 'Are you sure?')) ?>
+        <?php if($canEdit)
+            echo $this->Html->link(__('Edit'),
+                array('controller' => 'posts', 'action' => 'edit', $post['id'])); ?>
+        <?php if($canDelete)
+            echo $this->Form->postLink('Delete',
+                array('controller' => 'posts', 'action' => 'delete', $post['id']),
+                array('confirm' => 'Are you sure?')); ?>
     </div>
 <?php } ?>

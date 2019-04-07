@@ -1,3 +1,6 @@
+<?php
+$this->extend('/Common/View');
+?>
 <div class="users form">
     <?= $this->Flash->render('auth') ?>
     <h1><?= __("Please enter your credentials:") ?></h1>

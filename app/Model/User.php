@@ -4,6 +4,18 @@ App::uses('AppModel', 'Model');
 App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
 
 class User extends AppModel {
+    public $belongsTo = array(
+        'UserRole' => array(
+            'className' => 'Role',
+            'foreignKey' => 'role_id'
+        )
+    );
+    public $hasMany = array(
+        'UserPosts' => array(
+            'className' => 'Post',
+            'foreignKey' => 'user_id'
+        )
+    );
     public $validate = array(
         'username' => array(
             'required' => array(
@@ -16,13 +28,6 @@ class User extends AppModel {
                 'rule' => 'notBlank',
                 'message' => 'A password is required'
             )
-        ),
-        'role' => array(
-            'valid' => array(
-                'rule' => array('inList', array('admin', 'author')),
-                'message' => 'Please enter a valid role',
-                'allowEmpty' => false
-            )
         )
     );
 
@@ -31,6 +36,11 @@ class User extends AppModel {
         if(isset($this->data[$this->alias]['password'])) {
             $passwordHasher = new BlowfishPasswordHasher();
             $this->data[$this->alias]['password'] = $passwordHasher->hash($this->data[$this->alias]['password']);
+        }
+
+        // If role is unset, set to default.
+        if(!isset($this->data[$this->alias]['role_id'])) {
+            $this->data[$this->alias]['role_id'] = $this->UserRole->getDefaultId();
         }
 
         return true;
