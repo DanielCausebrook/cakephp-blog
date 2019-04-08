@@ -30,18 +30,39 @@ App::uses('Model', 'Model');
  * @package       app.Model
  */
 class AppModel extends Model {
-    public $recursive = -1;
+    public $actsAs = array('Containable');
+    public $recursive = 1;
 
     /**
-     * Checks for and retrieves a post from the database. Makes use of exceptions
+     * Checks for and retrieves a post from the database. Makes use of exceptions instead of inconsistent return types.
      * @param null $id id of the post to retrieve.
-     * @throws NotFoundException if the post is not found in the database.
+     * @param array $contains The associated models to fetch.
      * @return array
      */
-    public function getById($id = null) {
+    public function getById($id = null, $contains = array()) {
         if (!$id) throw new NotFoundException(__('Invalid %s.', $this->alias));
 
-        $post = $this->findById($id);
+        $post = $this->find('first', array(
+            'contains' => $contains,
+            'conditions' => array($this->alias.'.id' => $id)
+        ));
+        if (!$post) throw new NotFoundException(__('Invalid %s.', $this->alias));
+        return $post;
+    }
+
+    /**
+     * Checks for and retrieves a post from the database. Makes use of exceptions instead of inconsistent return types.
+     * @param null $id id of the post to retrieve.
+     * @param array $contains The associated models to fetch.
+     * @return array
+     */
+    public function getAllById($id = null, $contains = array()) {
+        if (!$id) throw new NotFoundException(__('Invalid %s.', $this->alias));
+
+        $post = $this->find('all', array(
+            'contains' => $contains,
+            'conditions' => array($this->alias.'.id' => $id)
+        ));
         if (!$post) throw new NotFoundException(__('Invalid %s.', $this->alias));
         return $post;
     }

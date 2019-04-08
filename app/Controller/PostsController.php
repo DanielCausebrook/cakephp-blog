@@ -8,7 +8,7 @@ class PostsController extends AppController {
      * View all posts
      */
     public function index() {
-        $this->set('posts', $this->Post->find('all'));
+        $this->set('posts', $this->Post->find('all', array('contains' => 'PostUser')));
     }
 
     /**
@@ -16,11 +16,12 @@ class PostsController extends AppController {
      * @param null $id id of the post to retrieve.
      */
     public function view($id = null) {
-        $post = $this->Post->getById($id);
+        $post = $this->Post->getById($id, array('PostUser'));
+        $isPostOwner = $post['Post']['user_id'] === $this->Auth->user('id');
         $this->set('post', $post['Post']);
         $this->set('author', $post['PostUser']);
-        $this->set('canEdit', $this->isActionAuthorized($this->Auth->user(), 'edit'));
-        $this->set('canDelete', $this->isActionAuthorized($this->Auth->user(), 'delete'));
+        $this->set('canEdit', $this->isActionAuthorized($this->Auth->user(), $isPostOwner, 'edit'));
+        $this->set('canDelete', $this->isActionAuthorized($this->Auth->user(), $isPostOwner, 'delete'));
     }
 
     /**
@@ -79,17 +80,17 @@ class PostsController extends AppController {
     }
 
     public function isAuthorized($user) {
-        return $this->isActionAuthorized($user, $this->action);
+        return $this->isActionAuthorized($user, $this->isPostOwner($user), $this->action);
     }
 
-    public function isActionAuthorized($user, $action) {
+    public function isActionAuthorized($user, $isPostOwner, $action) {
         switch($action) {
             case "add":
                 return $user['UserRole']['add_post'];
             case "edit":
-                return $user['UserRole']['edit_post'] || $this->isPostOwner($user);
+                return $user['UserRole']['edit_post'] || $isPostOwner;
             case "delete":
-                return $user['UserRole']['delete_post'] || $this->isPostOwner($user);
+                return $user['UserRole']['delete_post'] || $isPostOwner;
             default:
                 throw new InvalidArgumentException();
         }

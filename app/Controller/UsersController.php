@@ -40,11 +40,10 @@ class UsersController extends AppController {
      * @throws NotFoundException
      */
     public function view($id = null) {
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('Invalid user'));
-        }
-        $options = array('conditions' => array('User.' . $this->User->primaryKey => $id));
-        $this->set('user', $this->User->find('first', $options));
+        $user = $this->User->getById($id, array('UserPosts'));
+
+        $this->set('user', $user['User']);
+        $this->set('posts', $user['UserPosts']);
     }
 
     /**

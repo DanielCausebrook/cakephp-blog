@@ -7,7 +7,12 @@ $this->extend('/Common/view');
 ?>
 <h1><?= $post['title'] ?></h1>
 <?php if($post['created']) { ?>
-    <p><small>Created on <?= $post['created'] ?> by <?= $author['username'] ?>.</small></p>
+    <p>
+        Created on <?= $post['created'] ?> by
+        <?= $this->Html->link($author['username'],
+            array('controller' => 'users', 'action' => 'view', $author['id'])) ?>
+        .
+    </p>
 <?php } ?>
 <p>
     <?= $post['body'] ?>

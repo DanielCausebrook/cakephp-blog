@@ -1,7 +1,6 @@
 <?php
 
 class Post extends AppModel {
-    public $recursive = 0;
     public $belongsTo = array(
         'PostUser' => array(
             'className' => 'User',
