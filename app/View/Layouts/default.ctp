@@ -45,14 +45,16 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                 <h1>CakePHP Blog</h1>
             </div>
             <?php if(AuthComponent::user('id')) { ?>
-                <div class="col-auto p-1"><?= __("Signed in as %s.", h(AuthComponent::user('username'))) ?></div>
+                <div class="col-auto p-1"><h3><?= __("%s", h(AuthComponent::user('username'))) ?></h3></div>
                 <div class="col-auto mr-3">
+                    <?= $this->Html->link(__('My Account'),
+                        array('controller' => 'users', 'action' => 'view', AuthComponent::user('id')),
+                        array('class' => 'btn btn-primary btn-sm')) ?>
                     <?= $this->Html->link(__('Sign Out'),
                         array('controller' => 'users', 'action' => 'logout'),
-                        array('class' => 'btn btn-primary btn-sm')) ?>
+                        array('class' => 'btn btn-secondary btn-sm')) ?>
                 </div>
             <?php } else { ?>
-                <div class="col-auto p-1"><?= __("Not signed in.") ?></div>
                 <div class="col-auto mr-3">
                     <?= $this->Html->link(__('Login'),
                         array('controller' => 'users', 'action' => 'login'),
@@ -85,7 +87,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
         <?= $this->fetch('content') ?>
     </section>
 </div>
-<footer class="container-fluid p-3 text-light bg-dark">
+<footer class="container-fluid p-3 mt-4 text-light bg-dark">
     Created by Daniel Causebrook
 </footer>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

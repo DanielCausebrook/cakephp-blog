@@ -40,10 +40,11 @@ class UsersController extends AppController {
      * @throws NotFoundException
      */
     public function view($id = null) {
-        $user = $this->User->getById($id, array('UserPosts'));
+        $user = $this->User->getById($id, array('UserPosts', 'UserRole'));
 
         $this->set('user', $user['User']);
         $this->set('posts', $user['UserPosts']);
+        $this->set('role', $user['UserRole']);
     }
 
     /**

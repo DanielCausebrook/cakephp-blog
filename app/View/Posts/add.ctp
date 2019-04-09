@@ -7,8 +7,16 @@
     ))) ?>
 <?= $this->Form->input('title') ?>
 <?= $this->Form->input('body', array('rows' => '3')) ?>
-<?= $this->Form->submit(__('Save Post'), array(
-    'class' => 'btn btn-primary'
-)) ?>
+<div class="row align-items-center">
+    <div class="col-auto">
+        <?= $this->Form->submit(__('Save Post'), array(
+            'class' => 'btn btn-primary'
+        )) ?>
+    </div>
+    <div class="col-auto">
+        <?= $this->Html->link(__('Cancel'),
+            array('controller' => 'posts', 'action' => 'index')) ?>
+    </div>
+</div>
 <?= $this->Form->end() ?>
 
