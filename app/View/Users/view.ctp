@@ -1,5 +1,4 @@
 <?php
-$this->extend('/Common/View');
 /** @var $user array */
 /** @var $posts array */
 ?>
@@ -7,7 +6,7 @@ $this->extend('/Common/View');
 <h1>User <?= $user['username'] ?></h1>
 
 <h2>Posts</h2>
-<table>
+<table class="table">
     <tr>
         <th>Title</th>
         <th>Date Created</th>

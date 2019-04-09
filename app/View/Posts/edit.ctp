@@ -1,6 +1,3 @@
-<?php
-$this->extend('/Common/View');
-?>
 <h1>Edit post</h1>
 <?= $this->Form->create('Post') ?>
 <?= $this->Form->input('title') ?>

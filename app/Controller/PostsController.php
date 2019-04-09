@@ -34,10 +34,16 @@ class PostsController extends AppController {
 
             $this->Post->create();
             if($this->Post->save($this->request->data)) {
-                $this->Flash->success(__("Your post has been saved!"));
+                $this->Flash->alert(__("Your post has been saved!"), array(
+                    'plugin' => 'BoostCake',
+                    'params' => array('class' => 'alert-success alert-dismissible')
+                ));
                 return $this->redirect(array('action' => 'index'));
             }
-            $this->Flash->error(__('Unable to save your post.'));
+            $this->Flash->alert(__('Unable to save your post.'), array(
+                'plugin' => 'BoostCake',
+                'params' => array('class' => 'alert-danger alert-dismissible')
+            ));
         }
     }
 
@@ -52,10 +58,16 @@ class PostsController extends AppController {
         if($this->request->is(array('post' => 'put'))) {
             $this->Post->id = $id;
             if($this->Post->save($this->request->data)) {
-                $this->Flash->success(__("Your post has been updated!"));
+                $this->Flash->alert(__("Your post has been updated!"), array(
+                    'plugin' => 'BoostCake',
+                    'params' => array('class' => 'alert-success alert-dismissible')
+                ));
                 return $this->redirect(array('action' => 'index'));
             }
-            $this->Flash->error(__('Unable to update your post.'));
+            $this->Flash->alert(__('Unable to update your post.'), array(
+                'plugin' => 'BoostCake',
+                'params' => array('class' => 'alert-danger alert-dismissible')
+            ));
         }
 
         if(!$this->request->data) {
@@ -72,9 +84,15 @@ class PostsController extends AppController {
         if($this->request->is('get')) throw new MethodNotAllowedException();
 
         if($this->Post->delete($id)) {
-            $this->Flash->success(__('Your post was deleted.'));
+            $this->Flash->alert(__('Your post was deleted.'), array(
+                'plugin' => 'BoostCake',
+                'params' => array('class' => 'alert-success alert-dismissible')
+            ));
         } else {
-            $this->Flash->error(__('Your post could not be deleted.'));
+            $this->Flash->alert(__('Your post could not be deleted.'), array(
+                'plugin' => 'BoostCake',
+                'params' => array('class' => 'alert-warning alert-dismissible')
+            ));
         }
         return $this->redirect(array('action' => 'index'));
     }

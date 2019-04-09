@@ -1,5 +1,4 @@
 <?php
-$this->extend('/Common/view');
 /** @var array $post */
 /** @var array $author */
 /** @var boolean $canEdit */

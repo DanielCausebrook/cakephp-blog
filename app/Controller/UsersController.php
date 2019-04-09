@@ -59,11 +59,19 @@ class UsersController extends AppController {
 
             $this->User->create();
             if ($this->User->save($this->request->data)) {
-                $this->Flash->success(__('The user account %s has been created.',
-                    h($this->request->data['User']['username'])));
+                $this->Flash->alert(
+                    __('The user account %s has been created.',
+                        h($this->request->data['User']['username'])),
+                    array(
+                        'plugin' => 'BoostCake',
+                        'params' => array('class' => 'alert-success alert-dismissible')
+                ));
                 return $this->redirect(array('action' => 'index'));
             } else {
-                $this->Flash->error(__('The user account could not be created. Please try again.'));
+                $this->Flash->alert(__('The user account could not be created. Please try again.'), array(
+                    'plugin' => 'BoostCake',
+                    'params' => array('class' => 'alert-warning alert-dismissible')
+                ));
             }
         }
     }
@@ -81,10 +89,16 @@ class UsersController extends AppController {
         }
         if ($this->request->is(array('post', 'put'))) {
             if ($this->User->save($this->request->data)) {
-                $this->Flash->success(__('The user has been saved.'));
+                $this->Flash->alert(__('The user has been saved.'), array(
+                    'plugin' => 'BoostCake',
+                    'params' => array('class' => 'alert-success alert-dismissible')
+                ));
                 return $this->redirect(array('action' => 'index'));
             } else {
-                $this->Flash->error(__('The user could not be saved. Please, try again.'));
+                $this->Flash->alert(__('The user could not be saved. Please, try again.'), array(
+                    'plugin' => 'BoostCake',
+                    'params' => array('class' => 'alert-warning alert-dismissible')
+                ));
             }
         } else {
             $options = array('conditions' => array('User.' . $this->User->primaryKey => $id));
@@ -105,9 +119,15 @@ class UsersController extends AppController {
         }
         $this->request->allowMethod('post', 'delete');
         if ($this->User->delete($id)) {
-            $this->Flash->success(__('The user account has been deleted.'));
+            $this->Flash->alert(__('The user account has been deleted.'), array(
+                'plugin' => 'BoostCake',
+                'params' => array('class' => 'alert-success alert-dismissible')
+            ));
         } else {
-            $this->Flash->error(__('The account could not be deleted. Please, try again.'));
+            $this->Flash->alert(__('The account could not be deleted. Please, try again.'), array(
+                'plugin' => 'BoostCake',
+                'params' => array('class' => 'alert-warning alert-dismissible')
+            ));
         }
         return $this->redirect(array('action' => 'index'));
     }
@@ -120,10 +140,16 @@ class UsersController extends AppController {
     public function login() {
         if($this->request->is('post')) {
             if($this->Auth->login()) {
-                $this->Flash->success(__('Signed in successfully.'));
+                $this->Flash->alert(__('Signed in successfully.'), array(
+                    'plugin' => 'BoostCake',
+                    'params' => array('class' => 'alert-success alert-dismissible')
+                ));
                 return $this->redirect($this->Auth->redirectUrl());
             }
-            $this->Flash->error(__('Invalid username or password.'));
+            $this->Flash->alert(__('Invalid username or password.'), array(
+                'plugin' => 'BoostCake',
+                'params' => array('class' => 'alert-danger alert-dismissible')
+            ));
         }
     }
 
