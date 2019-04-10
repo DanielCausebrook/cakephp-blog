@@ -1,4 +1,4 @@
-<h1><?= __('Register') ?></h1>
+<h1 class="mt-3 p-2"><?= __('Register') ?></h1>
 <?= $this->Form->create('User', array(
     'inputDefaults' => array(
         'div' => 'form-group',

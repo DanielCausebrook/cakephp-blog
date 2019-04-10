@@ -8,13 +8,8 @@ App::uses('AppController', 'Controller');
  * @property PaginatorComponent $Paginator
  */
 class UsersController extends AppController {
-
-    /**
-     * Components
-     *
-     * @var array
-     */
-    public $components = array('Paginator');
+    public $helpers = array('Html', 'Form', 'Flash');
+    public $components = array('Flash','Paginator');
 
     public function beforeFilter() {
         parent::beforeFilter();
@@ -28,7 +23,7 @@ class UsersController extends AppController {
      * @return void
      */
     public function index() {
-        $this->User->recursive = 0;
+        $this->User->contain('UserRole');
         $this->set('users', $this->Paginator->paginate());
     }
 
@@ -40,11 +35,27 @@ class UsersController extends AppController {
      * @throws NotFoundException
      */
     public function view($id = null) {
-        $user = $this->User->getById($id, array('UserPosts', 'UserRole'));
+        $data = $this->User->getById($id, array(
+                'UserPosts' => array(
+                    'order' => array('UserPosts.modified' => 'desc')
+                ),
+                'UserRole'
+            )
+        );
 
-        $this->set('user', $user['User']);
-        $this->set('posts', $user['UserPosts']);
-        $this->set('role', $user['UserRole']);
+        $this->set('user', $data['User']);
+        $this->set('posts', $data['UserPosts']);
+        $this->set('role', $data['UserRole']);
+        $this->set('isAccountOwner', $this->_isRequestedUser($this->Auth->user()));
+        $this->set('canDelete', $this->_isActionAuthorised($this->Auth->user(), 'delete'));
+        if($this->_isActionAuthorised($this->Auth->user(), 'editrole')) {
+            $this->set('canEditRole', true);
+            $allRoles = array_column($this->User->UserRole->getAll(), 'UserRole');
+            $this->set('allRoles', $allRoles);
+        } else {
+            $this->set('canEditRole', false);
+            $this->set('allRoles', array());
+        }
     }
 
     /**
@@ -78,33 +89,32 @@ class UsersController extends AppController {
     }
 
     /**
-     * edit method
-     *
-     * @param string $id
+     * Sets a user's role.
      * @return CakeResponse|null
      * @throws Exception
      */
-    public function edit($id = null) {
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('Invalid user'));
-        }
-        if ($this->request->is(array('post', 'put'))) {
-            if ($this->User->save($this->request->data)) {
-                $this->Flash->alert(__('The user has been saved.'), array(
+    public function editrole() {
+        $id = $this->request->data['User']['id'];
+        $role_id = $this->request->data['User']['role_id'];
+
+        if($this->request->is('post')) {
+            $user = array('User' => array(
+                'id' => $id,
+                'role_id' => $role_id
+            ));
+            if($this->User->save($user)) {
+                $this->Flash->alert(__("The user's role has been updated successfully."), array(
                     'plugin' => 'BoostCake',
                     'params' => array('class' => 'alert-success alert-dismissible')
                 ));
-                return $this->redirect(array('action' => 'index'));
             } else {
-                $this->Flash->alert(__('The user could not be saved. Please, try again.'), array(
+                $this->Flash->alert(__("The user's role could not be updated."), array(
                     'plugin' => 'BoostCake',
                     'params' => array('class' => 'alert-warning alert-dismissible')
                 ));
             }
-        } else {
-            $options = array('conditions' => array('User.' . $this->User->primaryKey => $id));
-            $this->request->data = $this->User->find('first', $options);
         }
+        return $this->redirect(array('action' => 'view', $id));
     }
 
     /**
@@ -135,7 +145,6 @@ class UsersController extends AppController {
 
     /**
      * Attempts to log a user into their account using the provided credentials.
-     *
      * @return CakeResponse|null
      */
     public function login() {
@@ -161,5 +170,45 @@ class UsersController extends AppController {
      */
     public function logout() {
         return $this->redirect($this->Auth->logout());
+    }
+
+    public function isAuthorized($user) {
+        return $this->_isActionAuthorised($user, $this->action);
+    }
+
+    /**
+     * Checks if any action is authorised for a given user.
+     * @param array $user The user attempting the action.
+     * @param string $action The action being attempted, as reported by $this->action. e.g. 'index'
+     * @return bool True if the action is authorised, false otherwise.
+     */
+    protected function _isActionAuthorised($user, $action) {
+        switch($action) {
+            case "add":
+            case "view":
+                return true;
+        }
+        if(!isset($user)) return false;
+        switch($action) {
+            case 'delete':
+                return $this->_isRequestedUser($user);
+            case 'editrole':
+                return $user['UserRole']['edit_user_role'];
+            default:
+                throw new InvalidArgumentException();
+        }
+    }
+
+    /**
+     * Checks if a user is the same as the requested user.
+     * @param array $user The user to check.
+     * @return boolean True if $user is the same as the user referenced in the current request.
+     */
+    protected function _isRequestedUser($user) {
+        if(isset($this->request->params['pass'][0])) {
+            $userId = $this->request->params['pass'][0];
+            return $user['id'] === $userId;
+        }
+        return false;
     }
 }

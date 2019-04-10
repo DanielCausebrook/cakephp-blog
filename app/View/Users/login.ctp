@@ -1,4 +1,4 @@
-<div class="users form">
+<div class="mt-3 p-2">
     <h1><?= __('Login') ?></h1>
     <?= $this->Flash->render('auth') ?>
     <h2><?= __('Please enter your credentials:') ?></h2>

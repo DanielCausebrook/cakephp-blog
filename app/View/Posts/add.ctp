@@ -1,4 +1,4 @@
-<h1><?= __('New post') ?></h1>
+<h1 class="mt-3 p-2"><?= __('New post') ?></h1>
 <?= $this->Form->create('Post', array(
     'inputDefaults' => array(
         'div' => 'form-group',

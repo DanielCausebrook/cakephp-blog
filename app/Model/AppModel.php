@@ -49,21 +49,4 @@ class AppModel extends Model {
         if (!$post) throw new NotFoundException(__('Invalid %s.', $this->alias));
         return $post;
     }
-
-    /**
-     * Checks for and retrieves a post from the database. Makes use of exceptions instead of inconsistent return types.
-     * @param null $id id of the post to retrieve.
-     * @param array $contains The associated models to fetch.
-     * @return array
-     */
-    public function getAllById($id = null, $contains = array()) {
-        if (!$id) throw new NotFoundException(__('Invalid %s.', $this->alias));
-
-        $post = $this->find('all', array(
-            'contains' => $contains,
-            'conditions' => array($this->alias.'.id' => $id)
-        ));
-        if (!$post) throw new NotFoundException(__('Invalid %s.', $this->alias));
-        return $post;
-    }
 }

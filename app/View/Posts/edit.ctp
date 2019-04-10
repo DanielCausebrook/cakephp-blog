@@ -1,4 +1,4 @@
-<h1>Edit post</h1>
+<h1 class="mt-4 p-2">Edit post</h1>
 <?= $this->Form->create('Post', array(
     'inputDefaults' => array(
         'div' => 'form-group',

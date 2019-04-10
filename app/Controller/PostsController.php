@@ -8,7 +8,11 @@ class PostsController extends AppController {
      * View all posts
      */
     public function index() {
-        $this->set('posts', $this->Post->find('all', array('contains' => 'PostUser')));
+        $this->set('posts', $this->Post->find('all', array(
+            'order' => array('Post.modified' => 'desc'),
+            'contains' => 'PostUser'
+        )));
+        $this->set('canAdd', $this->_isActionAuthorized($this->Auth->user(), 'add'));
     }
 
     /**
@@ -16,12 +20,13 @@ class PostsController extends AppController {
      * @param null $id id of the post to retrieve.
      */
     public function view($id = null) {
+        $this->helpers[] = 'Markdown';
         $post = $this->Post->getById($id, array('PostUser'));
         $isPostOwner = $post['Post']['user_id'] === $this->Auth->user('id');
         $this->set('post', $post['Post']);
         $this->set('author', $post['PostUser']);
-        $this->set('canEdit', $this->isActionAuthorized($this->Auth->user(), $isPostOwner, 'edit'));
-        $this->set('canDelete', $this->isActionAuthorized($this->Auth->user(), $isPostOwner, 'delete'));
+        $this->set('canEdit', $this->_isActionAuthorized($this->Auth->user(), 'edit', $isPostOwner));
+        $this->set('canDelete', $this->_isActionAuthorized($this->Auth->user(), 'delete', $isPostOwner));
     }
 
     /**
@@ -98,11 +103,24 @@ class PostsController extends AppController {
     }
 
     public function isAuthorized($user) {
-        return $this->isActionAuthorized($user, $this->isPostOwner($user), $this->action);
+        return $this->_isActionAuthorized($user, $this->action, $this->_isPostOwner($user));
     }
 
-    public function isActionAuthorized($user, $isPostOwner, $action) {
+    /**
+     * Checks if any action is authorised for a given user.
+     * @param array $user The user attempting the action.
+     * @param string $action The action being attempted, as reported by $this->action. e.g. 'index'
+     * @param bool $isPostOwner Whether the user owns the post on which the action is being attempted, if applicable.
+     * @return bool True if the action is authorised, false otherwise.
+     */
+    protected function _isActionAuthorized($user, $action, $isPostOwner = false) {
         switch($action) {
+            case "index":
+            case "view":
+                return true;
+        }
+        if(!isset($user)) return false;
+        switch ($action) {
             case "add":
                 return $user['UserRole']['add_post'];
             case "edit":
@@ -119,7 +137,7 @@ class PostsController extends AppController {
      * @param $user
      * @return boolean
      */
-    public function isPostOwner($user) {
+    protected function _isPostOwner($user) {
         if(isset($this->request->params['pass'][0])) {
             $postId = $this->request->params['pass'][0];
             return $this->Post->isOwnedBy($postId, $user['id']);

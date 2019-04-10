@@ -32,6 +32,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<?php
 		echo $this->Html->meta('icon');
 
+		echo $this->Html->css('colors');
+
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
 		echo $this->fetch('script');
@@ -39,14 +41,14 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 </head>
 <body>
 <div class="container-fluid p-2">
-    <header class="container-fluid p-0 mb-4 border rounded bg-dark text-light">
+    <header class="container-fluid mb-0 p-0 border border-dark rounded bg-dark text-light">
         <div class="row py-3 align-items-center">
-            <div class="col-lg mx-3">
+            <div class="col mx-3 py-3 text-nowrap">
                 <h1>CakePHP Blog</h1>
             </div>
             <?php if(AuthComponent::user('id')) { ?>
-                <div class="col-auto p-1"><h3><?= __("%s", h(AuthComponent::user('username'))) ?></h3></div>
-                <div class="col-auto mr-3">
+                <div class="col-auto p-1"></div>
+                <div class="col-auto mr-3"><h3><?= __("%s", h(AuthComponent::user('username'))) ?></h3>
                     <?= $this->Html->link(__('My Account'),
                         array('controller' => 'users', 'action' => 'view', AuthComponent::user('id')),
                         array('class' => 'btn btn-primary btn-sm')) ?>
@@ -65,30 +67,38 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                 </div>
             <?php } ?>
         </div>
-        <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <nav class="navbar navbar-expand navbar-light rounded-bottom bg-light">
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <?= $this->Html->link('Posts',
-                            array('controller' => 'posts', 'action' => 'index'),
-                            array('class' => 'nav-link')) ?>
-                    </li>
-                    <li class="nav-item">
-                        <?= $this->Html->link('Users',
-                            array('controller' => 'users', 'action' => 'index'),
-                            array('class' => 'nav-link')) ?>
-                    </li>
+                    <?php
+                    // Add a nav element for each specified controller.
+                    $controllers = array('posts', 'users');
+                    // Each nav element will be active when viewing its respective controller.
+                    foreach($controllers as $controller):
+                        $class = 'nav-link';
+                        if($this->params['controller'] === $controller) $class = $class . ' active';
+                        ?>
+                        <li class="nav-item text-capitalize">
+                            <?= $this->Html->link($controller,
+                                array('controller' => $controller, 'action' => 'index'),
+                                array('class' => $class)) ?>
+                        </li>
+                    <?php
+                    endforeach;
+                    unset($controller);
+                    ?>
                 </ul>
             </div>
         </nav>
     </header>
-    <section class="container-fluid m-1">
+    <section class="container-fluid m-0">
         <?php echo $this->Flash->render(); ?>
         <?= $this->fetch('content') ?>
     </section>
 </div>
 <footer class="container-fluid p-3 mt-4 text-light bg-dark">
     Created by Daniel Causebrook
+    <?php //echo $this->element('sql_dump'); ?>
 </footer>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

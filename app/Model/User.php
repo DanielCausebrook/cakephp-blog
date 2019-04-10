@@ -45,8 +45,4 @@ class User extends AppModel {
 
         return true;
     }
-
-    public function getUsername($id = null) {
-        return $this->field('username', array('id' => $id));
-    }
 }
