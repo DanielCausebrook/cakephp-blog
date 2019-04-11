@@ -30,3 +30,12 @@ More information about schema migration can be found in the [CakePHP cookbook](h
 - You may encounter issues with allowing URL rewriting.
 
 These are all covered in detail in the [tutorial](https://book.cakephp.org/2.0/en/getting-started.html#blog-tutorial).
+
+## Resources
+
+This project makes use of these other tools:
+
+- [CakePHP](https://cakephp.org/) (v2.10)
+- [Bootstrap](https://cakephp.org/) (v4.3.1)
+- [BoostCake](http://slywalker.github.io/cakephp-plugin-boost_cake/) (v1.0.6)
+- [Parsedown](https://parsedown.org/) (v1.7.3)
