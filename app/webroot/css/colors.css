@@ -6,6 +6,10 @@
     border-color: #f5c6cb !important;
 }
 
+.text-danger {
+    color:#721c24 !important;
+}
+
 .bg-dark-light {
     background-color: #d6d8d9 !important;
 }
