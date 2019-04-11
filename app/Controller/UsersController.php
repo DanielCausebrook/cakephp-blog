@@ -8,7 +8,11 @@ App::uses('AppController', 'Controller');
  * @property PaginatorComponent $Paginator
  */
 class UsersController extends AppController {
-    public $helpers = array('Html', 'Form', 'Flash');
+    public $helpers = array(
+        'Html' => array('className' => 'BoostCake.BoostCakeHtml'),
+        'Form' => array('className' => 'BoostCake.BoostCakeForm'),
+        'Paginator' => array('className' => 'BoostCake.BoostCakePaginator'),
+        'Flash');
     public $components = array('Flash','Paginator');
 
     public function beforeFilter() {
@@ -71,19 +75,17 @@ class UsersController extends AppController {
 
             $this->User->create();
             if ($this->User->save($this->request->data)) {
-                $this->Flash->alert(
+                $user = $this->User->getById($this->User->getInsertID(), 'UserRole');
+                unset($user['User']['password']);
+                $user['User']['UserRole'] = $user['UserRole'];
+                $this->Auth->login($user['User']);
+                $this->Flash->success(
                     __('The user account %s has been created.',
-                        h($this->request->data['User']['username'])),
-                    array(
-                        'plugin' => 'BoostCake',
-                        'params' => array('class' => 'alert-success alert-dismissible')
-                ));
+                        h($this->request->data['User']['username']))
+                );
                 return $this->redirect(array('action' => 'index'));
             } else {
-                $this->Flash->alert(__('The user account could not be created. Please try again.'), array(
-                    'plugin' => 'BoostCake',
-                    'params' => array('class' => 'alert-warning alert-dismissible')
-                ));
+                $this->Flash->error(__('The user account could not be created. Please try again.'));
             }
         }
     }
@@ -103,15 +105,9 @@ class UsersController extends AppController {
                 'role_id' => $role_id
             ));
             if($this->User->save($user)) {
-                $this->Flash->alert(__("The user's role has been updated successfully."), array(
-                    'plugin' => 'BoostCake',
-                    'params' => array('class' => 'alert-success alert-dismissible')
-                ));
+                $this->Flash->success(__("The user's role has been updated."));
             } else {
-                $this->Flash->alert(__("The user's role could not be updated."), array(
-                    'plugin' => 'BoostCake',
-                    'params' => array('class' => 'alert-warning alert-dismissible')
-                ));
+                $this->Flash->error(__("The user's role could not be updated."));
             }
         }
         return $this->redirect(array('action' => 'view', $id));
@@ -130,15 +126,9 @@ class UsersController extends AppController {
         }
         $this->request->allowMethod('post', 'delete');
         if ($this->User->delete($id)) {
-            $this->Flash->alert(__('The user account has been deleted.'), array(
-                'plugin' => 'BoostCake',
-                'params' => array('class' => 'alert-success alert-dismissible')
-            ));
+            $this->Flash->success(__('The user account has been deleted.'));
         } else {
-            $this->Flash->alert(__('The account could not be deleted. Please, try again.'), array(
-                'plugin' => 'BoostCake',
-                'params' => array('class' => 'alert-warning alert-dismissible')
-            ));
+            $this->Flash->error(__('The account could not be deleted. Please, try again.'));
         }
         return $this->redirect(array('action' => 'index'));
     }
@@ -150,16 +140,9 @@ class UsersController extends AppController {
     public function login() {
         if($this->request->is('post')) {
             if($this->Auth->login()) {
-                $this->Flash->alert(__('Signed in successfully.'), array(
-                    'plugin' => 'BoostCake',
-                    'params' => array('class' => 'alert-success alert-dismissible')
-                ));
                 return $this->redirect($this->Auth->redirectUrl());
             }
-            $this->Flash->alert(__('Invalid username or password.'), array(
-                'plugin' => 'BoostCake',
-                'params' => array('class' => 'alert-danger alert-dismissible')
-            ));
+            $this->Flash->error(__('Invalid username or password.'));
         }
     }
 

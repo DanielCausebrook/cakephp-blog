@@ -45,6 +45,7 @@ class AppController extends Controller {
             ),
             'authenticate' => array(
                 'Form' => array(
+                    'contain' => 'UserRole',
                     'passwordHasher' => 'Blowfish'
                 )
             ),
@@ -54,12 +55,8 @@ class AppController extends Controller {
                 'action' => 'index'
             ),
             'flash' => array(
-                'element' => 'alert',
-                'key' => 'auth',
-                'params' => array(
-                    'plugin' => 'BoostCake',
-                    'class' => 'alert-error'
-                )
+                'element' => 'error',
+                'key' => 'auth'
             )
         )
     );

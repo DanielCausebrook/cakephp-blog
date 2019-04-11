@@ -1,7 +1,11 @@
 <?php
 
 class PostsController extends AppController {
-    public $helpers = array('Html', 'Form', 'Flash');
+    public $helpers = array(
+        'Html' => array('className' => 'BoostCake.BoostCakeHtml'),
+        'Form' => array('className' => 'BoostCake.BoostCakeForm'),
+        'Paginator' => array('className' => 'BoostCake.BoostCakePaginator'),
+        'Flash');
     public $components = array('Flash');
 
     /**
@@ -39,16 +43,9 @@ class PostsController extends AppController {
 
             $this->Post->create();
             if($this->Post->save($this->request->data)) {
-                $this->Flash->alert(__("Your post has been saved!"), array(
-                    'plugin' => 'BoostCake',
-                    'params' => array('class' => 'alert-success alert-dismissible')
-                ));
-                return $this->redirect(array('action' => 'index'));
+                return $this->redirect(array('action' => 'view', $this->Post->getInsertID()));
             }
-            $this->Flash->alert(__('Unable to save your post.'), array(
-                'plugin' => 'BoostCake',
-                'params' => array('class' => 'alert-danger alert-dismissible')
-            ));
+            $this->Flash->error(__('Unable to save your post.'));
         }
     }
 
@@ -63,16 +60,10 @@ class PostsController extends AppController {
         if($this->request->is(array('post' => 'put'))) {
             $this->Post->id = $id;
             if($this->Post->save($this->request->data)) {
-                $this->Flash->alert(__("Your post has been updated!"), array(
-                    'plugin' => 'BoostCake',
-                    'params' => array('class' => 'alert-success alert-dismissible')
-                ));
-                return $this->redirect(array('action' => 'index'));
+                $this->Flash->success(__("Your post has been updated!"));
+                return $this->redirect(array('action' => 'view', $id));
             }
-            $this->Flash->alert(__('Unable to update your post.'), array(
-                'plugin' => 'BoostCake',
-                'params' => array('class' => 'alert-danger alert-dismissible')
-            ));
+            $this->Flash->error(__('Unable to update your post.'));
         }
 
         if(!$this->request->data) {
@@ -81,7 +72,7 @@ class PostsController extends AppController {
     }
 
     /**
-     * Delete an existing post
+     * Delete an existing post.
      * @param null $id id of the post to delete.
      * @return CakeResponse|null
      */
@@ -89,17 +80,12 @@ class PostsController extends AppController {
         if($this->request->is('get')) throw new MethodNotAllowedException();
 
         if($this->Post->delete($id)) {
-            $this->Flash->alert(__('Your post was deleted.'), array(
-                'plugin' => 'BoostCake',
-                'params' => array('class' => 'alert-success alert-dismissible')
-            ));
+            $this->Flash->success(__('The post was deleted.'));
+            return $this->redirect(array('action' => 'index'));
         } else {
-            $this->Flash->alert(__('Your post could not be deleted.'), array(
-                'plugin' => 'BoostCake',
-                'params' => array('class' => 'alert-warning alert-dismissible')
-            ));
+            $this->Flash->error(__('The post could not be deleted.'));
+            return $this->redirect(array('action' => 'view', $id));
         }
-        return $this->redirect(array('action' => 'index'));
     }
 
     public function isAuthorized($user) {

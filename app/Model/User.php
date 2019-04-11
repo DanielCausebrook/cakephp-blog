@@ -21,6 +21,10 @@ class User extends AppModel {
             'required' => array(
                 'rule' => 'notBlank',
                 'message' => 'A username is required'
+            ),
+            'unique' => array(
+                'rule' => 'isUnique',
+                'message' => 'An account with this username already exists'
             )
         ),
         'password' => array(
