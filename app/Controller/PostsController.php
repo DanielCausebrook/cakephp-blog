@@ -14,7 +14,7 @@ class PostsController extends AppController {
     public function index() {
         $this->set('posts', $this->Post->find('all', array(
             'order' => array('Post.modified' => 'desc'),
-            'contains' => 'PostUser'
+            'contain' => 'PostUser'
         )));
         $this->set('canAdd', $this->_isActionAuthorized($this->Auth->user(), 'add'));
     }

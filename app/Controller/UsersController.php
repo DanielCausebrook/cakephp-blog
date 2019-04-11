@@ -26,8 +26,10 @@ class UsersController extends AppController {
      * @return void
      */
     public function index() {
-        $this->User->contain('UserRole');
-        $this->set('users', $this->Paginator->paginate());
+        $this->set('users', $this->User->find('all', array(
+            'order' => array('User.created' => 'desc'),
+            'contain' => 'UserRole'
+        )));
     }
 
     /**
