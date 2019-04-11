@@ -14,14 +14,12 @@ $this->assign('title', 'Error');
             <div class="col-md-auto text-monospace">
                 <?php echo $message; ?>
             </div>
-            <div class="w-100"></div>
-            <div class="col-md-auto mt-3 pt-3 border-top border-danger-light">
-                <?php
-                if (Configure::read('debug') > 0):
-                    echo $this->element('exception_stack_trace');
-                endif;
-                ?>
-            </div>
+            <?php if (Configure::read('debug') > 0) { ?>
+                <div class="w-100"></div>
+                <div class="col-md-auto mt-3 pt-3 border-top border-danger-light">
+                    <?= $this->element('exception_stack_trace') ?>
+                </div>
+            <?php } ?>
         </div>
     </div>
 </div>
