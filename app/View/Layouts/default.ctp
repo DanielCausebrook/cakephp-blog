@@ -41,56 +41,58 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	?>
 </head>
 <body>
-<div class="container-fluid p-2">
-    <header class="container-fluid mb-0 p-0 border border-dark rounded bg-dark text-light">
-        <div class="row py-3 align-items-center">
-            <div class="col mx-3 py-3 text-nowrap">
-                <h1>CakePHP Blog</h1>
+<div class="container-fluid px-2">
+    <header class="row mx-0 mt-2 mb-0 p-0 border border-dark rounded bg-dark text-light">
+        <div class="col">
+            <div class="row py-3 align-items-center">
+                <div class="col mx-3 py-3 text-nowrap">
+                    <h1>CakePHP Blog</h1>
+                </div>
+                <?php if(AuthComponent::user('id')) { ?>
+                    <div class="col-auto p-1"></div>
+                    <div class="col-auto mr-3"><h3><?= __("%s", h(AuthComponent::user('username'))) ?></h3>
+                        <?= $this->Html->link(__('My Account'),
+                            array('controller' => 'users', 'action' => 'view', AuthComponent::user('id')),
+                            array('class' => 'btn btn-primary btn-sm')) ?>
+                        <?= $this->Html->link(__('Sign Out'),
+                            array('controller' => 'users', 'action' => 'logout'),
+                            array('class' => 'btn btn-secondary btn-sm')) ?>
+                    </div>
+                <?php } else { ?>
+                    <div class="col-auto mr-3">
+                        <?= $this->Html->link(__('Login'),
+                            array('controller' => 'users', 'action' => 'login'),
+                            array('class' => 'btn btn-primary btn-sm')) ?>
+                        <?= $this->Html->link(__('Register'),
+                            array('controller' => 'users', 'action' => 'add'),
+                            array('class' => 'btn btn-secondary btn-sm')) ?>
+                    </div>
+                <?php } ?>
             </div>
-            <?php if(AuthComponent::user('id')) { ?>
-                <div class="col-auto p-1"></div>
-                <div class="col-auto mr-3"><h3><?= __("%s", h(AuthComponent::user('username'))) ?></h3>
-                    <?= $this->Html->link(__('My Account'),
-                        array('controller' => 'users', 'action' => 'view', AuthComponent::user('id')),
-                        array('class' => 'btn btn-primary btn-sm')) ?>
-                    <?= $this->Html->link(__('Sign Out'),
-                        array('controller' => 'users', 'action' => 'logout'),
-                        array('class' => 'btn btn-secondary btn-sm')) ?>
-                </div>
-            <?php } else { ?>
-                <div class="col-auto mr-3">
-                    <?= $this->Html->link(__('Login'),
-                        array('controller' => 'users', 'action' => 'login'),
-                        array('class' => 'btn btn-primary btn-sm')) ?>
-                    <?= $this->Html->link(__('Register'),
-                        array('controller' => 'users', 'action' => 'add'),
-                        array('class' => 'btn btn-secondary btn-sm')) ?>
-                </div>
-            <?php } ?>
-        </div>
-        <nav class="navbar navbar-expand navbar-light rounded-bottom bg-light">
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav">
-                    <?php
-                    // Add a nav element for each specified controller.
-                    $controllers = array('posts', 'users');
-                    // Each nav element will be active when viewing its respective controller.
-                    foreach($controllers as $controller):
-                        $class = 'nav-link';
-                        if($this->params['controller'] === $controller) $class = $class . ' active';
+            <nav class="row navbar navbar-expand navbar-light rounded-bottom bg-light">
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav">
+                        <?php
+                        // Add a nav element for each specified controller.
+                        $controllers = array('posts', 'users');
+                        // Each nav element will be active when viewing its respective controller.
+                        foreach($controllers as $controller):
+                            $class = 'nav-link';
+                            if($this->params['controller'] === $controller) $class = $class . ' active';
+                            ?>
+                            <li class="nav-item text-capitalize">
+                                <?= $this->Html->link($controller,
+                                    array('controller' => $controller, 'action' => 'index'),
+                                    array('class' => $class)) ?>
+                            </li>
+                        <?php
+                        endforeach;
+                        unset($controller);
                         ?>
-                        <li class="nav-item text-capitalize">
-                            <?= $this->Html->link($controller,
-                                array('controller' => $controller, 'action' => 'index'),
-                                array('class' => $class)) ?>
-                        </li>
-                    <?php
-                    endforeach;
-                    unset($controller);
-                    ?>
-                </ul>
-            </div>
-        </nav>
+                    </ul>
+                </div>
+            </nav>
+        </div>
     </header>
     <section class="container-fluid m-0">
         <?php echo $this->Flash->render(); ?>
