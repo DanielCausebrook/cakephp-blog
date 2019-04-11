@@ -1,7 +1,6 @@
 <div class="row mt-5 justify-content-center">
     <div class="col-md-5 p-4 border border-dark-light rounded bg-dark-light">
         <h1 class="mb-3"><?= __('Welcome back!') ?></h1>
-        <?= $this->Flash->render('auth') ?>
         <?= $this->Form->create('User', array(
             'inputDefaults' => array(
                 'div' => 'form-group',

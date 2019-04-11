@@ -10,20 +10,46 @@
 
 <?php
 $this->start('accountActions');
-if($canEditRole) { ?>
-    <div class="row m-2 mt-4 px-2 pb-2 pt-0 border border-dark-light rounded">
-        <?= $this->Form->create('User', array(
-            'url' => array('controller' => 'users', 'action' => 'editrole'),
-            'inputDefaults' => array(
-                'div' => array('class' => 'col'),
-                'wrapInput' => false,
-                'class' => 'form-control form-control-sm'
-            )
-        ))?>
-        <div class="row m-1 text-nowrap font-weight-bold"><?= __('Change user role') ?></div>
-        <div class="form-row">
-            <?= $this->Form->input('id', array('type' => 'hidden', 'default' => $user['id'])) ?>
+if($isAccountOwner) { ?>
+    <div class="row m-2 mt-4">
+        <div class="col">
+            <?= $this->Form->create('User', array(
+                'url' => array('controller' => 'users', 'action' => 'editpass', $user['id']),
+                'inputDefaults' => array(
+                    'div' => array('class' => 'form-group ml-3'),
+                    'wrapInput' => false,
+                    'class' => 'form-control form-control-sm'
+                )
+            ))?>
+            <div class="form-group text-nowrap"><h5><?= __('Change password') ?></h5></div>
             <?php
+            echo $this->Form->input('old_password', array(
+                'type' => 'password'
+            ));
+            echo $this->Form->input('new_password', array(
+                'type' => 'password'
+            ));
+            echo $this->Form->submit(__('Apply'), array(
+                'class' => 'btn btn-secondary my-2'
+            ));
+            echo $this->Form->end() ?>
+        </div>
+    </div>
+<?php }
+if($canEditRole) { ?>
+    <div class="row m-2 mt-4">
+        <div class="col">
+            <?= $this->Form->create('User', array(
+                'url' => array('controller' => 'users', 'action' => 'editrole'),
+                'inputDefaults' => array(
+                    'div' => array('class' => 'form-group ml-3'),
+                    'wrapInput' => false,
+                    'class' => 'form-control form-control-sm'
+                )
+            ))?>
+            <h5 class="form-group text-nowrap"><?= __('Change user role') ?></h5>
+            <?php
+            echo $this->Form->input('id', array('type' => 'hidden', 'default' => $user['id']));
             $options = array_combine(array_column($allRoles, 'id'), array_column($allRoles, 'name'));
             echo $this->Form->input('role_id', array(
                 'label' => false,
@@ -32,33 +58,25 @@ if($canEditRole) { ?>
             ), array('class' => 'custom-select')
             );
             echo $this->Form->submit(__('Apply'), array(
-                'class' => 'btn btn-sm btn-warning'
+                'confirm' => 'Are you sure you want to change this user\'s role?',
+                'class' => 'btn btn-warning'
             ));
             ?>
+            <?= $this->Form->end() ?>
         </div>
-        <?= $this->Form->end() ?>
-    </div>
-<?php }
-if($isAccountOwner) { ?>
-    <div class="row m-2 mt-4 px-2 pb-2 pt-0 border border-dark-light rounded">
-        <?= $this->Form->create('User', array(
-            'url' => array('controller' => 'users', 'action' => 'editpass'),
-            'inputDefaults' => array(
-                'div' => array('class' => 'col'),
-                'wrapInput' => false,
-                'class' => 'form-control form-control-sm'
-            )
-        ))?>
-        <div class="row m-1 text-nowrap font-weight-bold"><?= __('Change password') ?></div>
-
-        <?= $this->Form->end() ?>
     </div>
 <?php }
 if($canDelete) { ?>
-    <div class="row m-2 mt-4">
-        <?= $this->Html->link('Delete Account',
-            array('controller' => 'users', 'action' => 'delete', $user['id']),
-            array('class' => 'btn btn-danger')) ?>
+    <div class="row m-2 mt-5">
+        <div class="col">
+            <h5>Delete my account</h5>
+            <?= $this->Form->postLink('Delete Account',
+                array('controller' => 'users', 'action' => 'delete', $user['id']),
+                array(
+                    'confirm' => 'Are you sure you want to delete your account? This cannot be undone.',
+                    'class' => 'btn btn-danger m-2'
+                )) ?>
+        </div>
     </div>
 <?php }
 $this->end();

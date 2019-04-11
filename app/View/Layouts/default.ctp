@@ -94,6 +94,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
     </header>
     <section class="container-fluid m-0">
         <?php echo $this->Flash->render(); ?>
+        <?= $this->Flash->render('auth') ?>
         <?= $this->fetch('content') ?>
     </section>
 </div>

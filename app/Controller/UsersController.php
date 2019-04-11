@@ -18,7 +18,7 @@ class UsersController extends AppController {
     public function beforeFilter() {
         parent::beforeFilter();
 
-        $this->Auth->allow('add', 'logout', 'login');
+        $this->Auth->allow('add', 'logout');
     }
 
     /**
@@ -50,7 +50,7 @@ class UsersController extends AppController {
         $this->set('user', $data['User']);
         $this->set('posts', $data['UserPosts']);
         $this->set('role', $data['UserRole']);
-        $this->set('isAccountOwner', $this->_isRequestedUser($this->Auth->user()));
+        $this->set('isAccountOwner', $this->Auth->user('id') === $id);
         $this->set('canDelete', $this->_isActionAuthorised($this->Auth->user(), 'delete'));
         if($this->_isActionAuthorised($this->Auth->user(), 'editrole')) {
             $this->set('canEditRole', true);
@@ -75,7 +75,7 @@ class UsersController extends AppController {
 
             $this->User->create();
             if ($this->User->save($this->request->data)) {
-                $user = $this->User->getById($this->User->getInsertID(), 'UserRole');
+                $user = $this->User->getById($this->User->id, 'UserRole');
                 unset($user['User']['password']);
                 $user['User']['UserRole'] = $user['UserRole'];
                 $this->Auth->login($user['User']);
@@ -91,24 +91,51 @@ class UsersController extends AppController {
     }
 
     /**
+     * Edits a user's password, if a correct current password is provided.
+     * @param array $id
+     * @return CakeResponse|null
+     * @throws Exception
+     */
+    public function editpass($id = null) {
+        $this->request->allowMethod('post');
+        $user = $this->User->getById($id, array());
+
+        $oldPassword = $this->request->data['User']['old_password'];
+        if($this->User->checkPassword($oldPassword, $user)) {
+            $newUser = array('User' => array(
+                'password' => $this->request->data['User']['new_password']
+            ));
+            $this->User->id = $id;
+            if($this->User->save($newUser, true, array('password'))) {
+                $this->Flash->success(__("Your password has been updated."));
+            } else {
+                $this->Flash->error(__("Your password could not be updated."));
+            }
+        } else {
+            $this->Flash->error(__('Invalid password.'));
+        }
+        return $this->redirect(array('action' => 'view', $id));
+    }
+
+    /**
      * Sets a user's role.
      * @return CakeResponse|null
      * @throws Exception
      */
     public function editrole() {
+        $this->request->allowMethod('post');
+        if(!isset($this->request->data['User']['id'])) throw new BadRequestException();
         $id = $this->request->data['User']['id'];
-        $role_id = $this->request->data['User']['role_id'];
+        if(!$this->User->exists($id)) throw new NotFoundException('Invalid user');
 
-        if($this->request->is('post')) {
-            $user = array('User' => array(
-                'id' => $id,
-                'role_id' => $role_id
-            ));
-            if($this->User->save($user)) {
-                $this->Flash->success(__("The user's role has been updated."));
-            } else {
-                $this->Flash->error(__("The user's role could not be updated."));
-            }
+        $this->User->id = $id;
+        $user = array('User' => array(
+            'role_id' => $this->request->data['User']['role_id']
+        ));
+        if($this->User->save($user, true, array('role_id'))) {
+            $this->Flash->success(__("The user's role has been updated."));
+        } else {
+            $this->Flash->error(__("The user's role could not be updated."));
         }
         return $this->redirect(array('action' => 'view', $id));
     }
@@ -121,16 +148,17 @@ class UsersController extends AppController {
      * @throws NotFoundException
      */
     public function delete($id = null) {
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('Invalid user'));
-        }
         $this->request->allowMethod('post', 'delete');
+
+        if (!isset($id) || !$this->User->exists($id)) throw new NotFoundException(__('Invalid user'));
+
         if ($this->User->delete($id)) {
             $this->Flash->success(__('The user account has been deleted.'));
+            if($this->Auth->user('id') === $id) $this->Auth->logout();
         } else {
-            $this->Flash->error(__('The account could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The account could not be deleted. Please try again.'));
         }
-        return $this->redirect(array('action' => 'index'));
+        return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
     }
 
     /**
@@ -166,32 +194,17 @@ class UsersController extends AppController {
      * @return bool True if the action is authorised, false otherwise.
      */
     protected function _isActionAuthorised($user, $action) {
-        switch($action) {
-            case "add":
-            case "view":
-                return true;
-        }
         if(!isset($user)) return false;
         switch($action) {
             case 'delete':
-                return $this->_isRequestedUser($user);
+            case 'editpass':
+                if(!isset($this->request->params['pass'][0])) return false;
+                $reqUserId = $this->request->params['pass'][0];
+                return $user['id'] === $reqUserId;
             case 'editrole':
                 return $user['UserRole']['edit_user_role'];
             default:
-                throw new InvalidArgumentException();
+                return false;
         }
-    }
-
-    /**
-     * Checks if a user is the same as the requested user.
-     * @param array $user The user to check.
-     * @return boolean True if $user is the same as the user referenced in the current request.
-     */
-    protected function _isRequestedUser($user) {
-        if(isset($this->request->params['pass'][0])) {
-            $userId = $this->request->params['pass'][0];
-            return $user['id'] === $userId;
-        }
-        return false;
     }
 }

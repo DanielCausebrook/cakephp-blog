@@ -60,10 +60,10 @@ class PostsController extends AppController {
         if($this->request->is(array('post' => 'put'))) {
             $this->Post->id = $id;
             if($this->Post->save($this->request->data)) {
-                $this->Flash->success(__("Your post has been updated!"));
+                $this->Flash->success(__("The post has been updated!"));
                 return $this->redirect(array('action' => 'view', $id));
             }
-            $this->Flash->error(__('Unable to update your post.'));
+            $this->Flash->error(__('Unable to update the post.'));
         }
 
         if(!$this->request->data) {
@@ -100,11 +100,6 @@ class PostsController extends AppController {
      * @return bool True if the action is authorised, false otherwise.
      */
     protected function _isActionAuthorized($user, $action, $isPostOwner = false) {
-        switch($action) {
-            case "index":
-            case "view":
-                return true;
-        }
         if(!isset($user)) return false;
         switch ($action) {
             case "add":
@@ -114,7 +109,7 @@ class PostsController extends AppController {
             case "delete":
                 return $user['UserRole']['delete_post'] || $isPostOwner;
             default:
-                throw new InvalidArgumentException();
+                return false;
         }
     }
 

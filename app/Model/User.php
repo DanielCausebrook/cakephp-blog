@@ -35,6 +35,17 @@ class User extends AppModel {
         )
     );
 
+    /**
+     * Checks that a password correctly matches a user's stored hash.
+     * @param $password string The password to check.
+     * @param $user array The user to check against.
+     * @return bool True if the hashes match.
+     */
+    public function checkPassword($password, $user) {
+        $passwordHasher = new BlowfishPasswordHasher();
+        return $passwordHasher->check($password, $user['User']['password']);
+    }
+
     public function beforeSave($options = array()) {
         // Hash password.
         if(isset($this->data[$this->alias]['password'])) {
