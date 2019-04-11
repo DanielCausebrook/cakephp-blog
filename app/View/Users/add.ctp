@@ -14,8 +14,8 @@
         )) ?>
         <?= $this->Form->end() ?>
         <div class="mt-3">
-            Already have an account?
-            <?= $this->Html->link('Login here.',
+            <?= __('Already have an account?') ?>
+            <?= $this->Html->link(__('Login here.'),
                 array('controller' => 'users', 'action' => 'login')
             ) ?>
         </div>

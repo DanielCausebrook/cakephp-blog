@@ -3,14 +3,15 @@
 /** @var array $author */
 /** @var boolean $canEdit */
 /** @var boolean $canDelete */
+$this->assign('title', h($post['title']));
 ?>
 <div class="row justify-content-center">
     <div class="col-lg-8 p-3 border-left border-right border-bottom border-dark-light rounded-bottom bg-dark-light">
-        <h1 class="border-bottom border-dark-light"><?= $post['title'] ?></h1>
+        <h1 class="border-bottom border-dark-light"><?= h($post['title']) ?></h1>
         <div class="row align-items-center">
             <div class="col text-muted">
                 Created on <?= $post['created'] ?> by
-                <?= $this->Html->link($author['username'],
+                <?= $this->Html->link(h($author['username']),
                     array('controller' => 'users', 'action' => 'view', $author['id'])) ?>.
             </div>
             <?php if($canEdit || $canDelete) { ?>
@@ -20,10 +21,10 @@
                             array('controller' => 'posts', 'action' => 'edit', $post['id']),
                             array('class' => 'btn p-0 px-1 btn-secondary btn-sm')); ?>
                     <?php if($canDelete)
-                        echo $this->Form->postLink('Delete',
+                        echo $this->Form->postLink(__('Delete'),
                             array('controller' => 'posts', 'action' => 'delete', $post['id']),
                             array(
-                                'confirm' => 'Are you sure?',
+                                'confirm' => __('Are you sure you want to delete this post? This cannot be undone.'),
                                 'class' => 'btn p-0 px-1 btn-danger btn-sm'
                             )); ?>
                 </div>
@@ -33,6 +34,4 @@
     <div class="col-lg-8 p-4 text-dark">
         <?= $this->Markdown->text($post['body']) ?>
     </div>
-
-
 </div>

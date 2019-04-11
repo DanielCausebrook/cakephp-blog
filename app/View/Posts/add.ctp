@@ -1,3 +1,6 @@
+<?php
+$this->assign('title', 'New Post');
+?>
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="row mt-3 mb-4 align-items-center border-bottom border-dark-light">

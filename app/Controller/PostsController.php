@@ -9,7 +9,7 @@ class PostsController extends AppController {
     public $components = array('Flash');
 
     /**
-     * View all posts
+     * View all posts.
      */
     public function index() {
         $this->set('posts', $this->Post->find('all', array(
@@ -20,7 +20,7 @@ class PostsController extends AppController {
     }
 
     /**
-     * View one post
+     * View one post.
      * @param null $id id of the post to retrieve.
      */
     public function view($id = null) {
@@ -34,7 +34,7 @@ class PostsController extends AppController {
     }
 
     /**
-     * Add a new post
+     * Add a new post.
      * @return CakeResponse|null
      */
     public function add() {
@@ -50,7 +50,7 @@ class PostsController extends AppController {
     }
 
     /**
-     * Edit an existing post
+     * Edit an existing post.
      * @param null $id id of the post to edit.
      * @return CakeResponse|null
      */
@@ -77,7 +77,7 @@ class PostsController extends AppController {
      * @return CakeResponse|null
      */
     public function delete($id = null) {
-        if($this->request->is('get')) throw new MethodNotAllowedException();
+        $this->request->allowMethod('post', 'delete');
 
         if($this->Post->delete($id)) {
             $this->Flash->success(__('The post was deleted.'));

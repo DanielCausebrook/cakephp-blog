@@ -22,8 +22,7 @@ class UsersController extends AppController {
     }
 
     /**
-     * index method
-     *
+     * View all users.
      * @return void
      */
     public function index() {
@@ -32,8 +31,7 @@ class UsersController extends AppController {
     }
 
     /**
-     * view method
-     *
+     * View a user's profile, posts, and account settings if authorized to change them.
      * @param string $id
      * @return void
      * @throws NotFoundException
@@ -51,6 +49,7 @@ class UsersController extends AppController {
         $this->set('posts', $data['UserPosts']);
         $this->set('role', $data['UserRole']);
         $this->set('isAccountOwner', $this->Auth->user('id') === $id);
+        $this->set('canEditPass', $this->_isActionAuthorised($this->Auth->user(), 'editpass'));
         $this->set('canDelete', $this->_isActionAuthorised($this->Auth->user(), 'delete'));
         if($this->_isActionAuthorised($this->Auth->user(), 'editrole')) {
             $this->set('canEditRole', true);
@@ -63,8 +62,7 @@ class UsersController extends AppController {
     }
 
     /**
-     * add method
-     *
+     * Registers a new user.
      * @return CakeResponse|null
      * @throws Exception
      */
@@ -141,8 +139,7 @@ class UsersController extends AppController {
     }
 
     /**
-     * delete method
-     *
+     * Deletes a user account.
      * @param string $id
      * @return CakeResponse|null
      * @throws NotFoundException
@@ -176,7 +173,6 @@ class UsersController extends AppController {
 
     /**
      * Logs the user out of their current session.
-     *
      * @return CakeResponse|null
      */
     public function logout() {
