@@ -134,7 +134,7 @@ $this->end();
 
                         <?php foreach ($posts as $post): ?>
                             <tr>
-                                <td><?= $this->Html->link(h($post['title']),
+                                <td><?= $this->Html->link($post['title'],
                                         array('controller' => 'posts', 'action' => 'view', $post['id'])) ?></td>
                                 <td><?= $post['created'] ?></td>
                             </tr>

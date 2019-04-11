@@ -15,7 +15,7 @@ $this->assign('title', 'Users');
             </tr>
             <?php foreach($users as $user): ?>
             <tr class="border-left border-right">
-                <td><?= $this->Html->link(h($user['User']['username']),
+                <td><?= $this->Html->link($user['User']['username'],
                         array('controller' => 'users', 'action' => 'view', $user['User']['id'])) ?></td>
                 <td><?= h($user['User']['post_count']) ?></td>
                 <td><?= h($user['UserRole']['name']) ?></td>

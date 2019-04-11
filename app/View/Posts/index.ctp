@@ -23,9 +23,9 @@ $this->assign('title', 'Posts');
             </tr>
             <?php foreach($posts as $post): ?>
                 <tr class="border-left border-right">
-                    <td class="font-weight-bold"><?= $this->Html->link(h($post['Post']['title']),
+                    <td class="font-weight-bold"><?= $this->Html->link($post['Post']['title'],
                             array('controller' => 'posts', 'action' => 'view', $post['Post']['id'])) ?></td>
-                    <td class="bg-light"><?= $this->Html->link(h($post['PostUser']['username']),
+                    <td class="bg-light"><?= $this->Html->link($post['PostUser']['username'],
                             array('controller' => 'users', 'action' => 'view', $post['PostUser']['id'])) ?></td>
                     <td class="bg-light"><?= $post['Post']['created'] ?></td>
                 </tr>

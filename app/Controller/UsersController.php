@@ -81,7 +81,7 @@ class UsersController extends AppController {
                     __('The user account %s has been created.',
                         h($this->request->data['User']['username']))
                 );
-                return $this->redirect(array('action' => 'index'));
+                return $this->redirect(array('controller' => 'posts', 'action' => 'index'));
             } else {
                 $this->Flash->error(__('The user account could not be created. Please try again.'));
             }

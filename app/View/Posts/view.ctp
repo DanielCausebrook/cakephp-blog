@@ -11,7 +11,7 @@ $this->assign('title', h($post['title']));
         <div class="row align-items-center">
             <div class="col text-muted">
                 Created on <?= $post['created'] ?> by
-                <?= $this->Html->link(h($author['username']),
+                <?= $this->Html->link($author['username'],
                     array('controller' => 'users', 'action' => 'view', $author['id'])) ?>.
             </div>
             <?php if($canEdit || $canDelete) { ?>
